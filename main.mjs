@@ -10,19 +10,30 @@ const prisma = new PrismaClient();
 
 const template = fs.readFileSync("./template.html", "utf-8");
 app.get("/", async (request, response) => {
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
   const html = template.replace(
     "<!-- posts -->",
-    posts.map((post) => `<li>${escapeHTML(post.message)}</li>`).join(""),
+    posts.map((post) => 
+      `<li>
+        <strong>${escapeHTML(post.author)}</strong> 
+        at ${new Date(post.createdAt).toLocaleString()}:
+        ${escapeHTML(post.message)}
+      </li>`
+    ).join("")
   );
   response.send(html);
 });
 
 app.post("/send", async (request, response) => {
+  const { message, author } = request.body;
   await prisma.post.create({
-    data: { message: request.body.message },
+    data: { message, author },
   });
   response.redirect("/");
 });
 
-app.listen(3000);
+app.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});

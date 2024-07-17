@@ -11,7 +11,8 @@
       <!-- posts -->
     </ul>
     <form action="/send" method="post">
-      <input id="message-input" type="text" name="message" />
+      <input type="text" name="author" placeholder="名前" required />
+      <input type="text" name="message" placeholder="メッセージ" required />
       <button type="submit">送信</button>
     </form>
     <script src="/script.js"></script>
